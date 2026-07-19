@@ -1,0 +1,22 @@
+{
+  "zhipu": {
+    "model": "glm-5.2",
+    "status": "verified",
+    "notes": "compact/detailed 已实际调用成功"
+  },
+  "deepseek": {
+    "model": "deepseek-chat",
+    "status": "blocked",
+    "notes": "账户返回 402 QUOTA_EXCEEDED"
+  },
+  "qianfan": {
+    "model": "ernie-4.5-turbo-128k",
+    "status": "verified",
+    "notes": "compact 已实际调用成功"
+  },
+  "kimi": {
+    "model": "kimi-k2.6",
+    "status": "pending",
+    "notes": "配置与 Mock 契约通过，待真实调用验收"
+  }
+}

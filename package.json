@@ -1,0 +1,30 @@
+
+{
+  "name": "codex-multi-domestic-llm",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "api": "node src/http-server.js",
+    "bootstrap": "node scripts/bootstrap.mjs",
+    "codex:list": "node scripts/codex-config.mjs list",
+    "codex:install": "node scripts/codex-config.mjs install",
+    "codex:remove": "node scripts/codex-config.mjs remove",
+    "demo": "node scripts/demo.mjs",
+    "ask": "node scripts/demo.mjs",
+    "health": "node scripts/demo.mjs --health",
+    "report:usage": "node scripts/report-usage.mjs",
+    "provider:validate": "node scripts/provider-validate.mjs",
+    "provider:docs": "node scripts/provider-docs.mjs",
+    "provider:check": "node scripts/provider-check.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.4.5",
+    "winston": "^3.11.0"
+  }
+}

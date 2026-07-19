@@ -1,0 +1,36 @@
+{
+  "id": "qianfan",
+  "name": "百度智能云千帆",
+  "enabled": true,
+  "endpoint": {
+    "protocol": "openai-chat-completions",
+    "baseUrl": "https://qianfan.baidubce.com/v2/chat/completions"
+  },
+  "model": "ernie-4.5-turbo-128k",
+  "credentials": {
+    "envKeys": ["QIANFAN_API_KEY"]
+  },
+  "capabilities": {
+    "reasoning": false,
+    "code": false,
+    "longContext": true,
+    "streaming": true,
+    "contextCache": false
+  },
+  "limits": {
+    "contextChars": 24000,
+    "timeoutMs": 45000,
+    "outputTokens": {
+      "compact": 512,
+      "normal": 1024,
+      "detailed": 2048,
+      "minimum": 256,
+      "maximum": 4096
+    }
+  },
+  "routing": {
+    "aliases": ["千帆", "文心", "ERNIE"],
+    "keywords": ["百度", "千帆", "ERNIE", "文心"],
+    "priority": 30
+  }
+}

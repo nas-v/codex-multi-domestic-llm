@@ -1,0 +1,55 @@
+{
+  "id": "kimi",
+  "name": "Kimi",
+  "enabled": true,
+  "endpoint": {
+    "protocol": "openai-chat-completions",
+    "baseUrl": "https://api.moonshot.cn/v1/chat/completions"
+  },
+  "model": "kimi-k2.6",
+  "credentials": {
+    "envKeys": ["MOONSHOT_API_KEY", "KIMI_API_KEY"]
+  },
+  "request": {
+    "maxOutputTokensField": "max_tokens",
+    "omitParameters": ["temperature"]
+  },
+  "modelProfiles": {
+    "kimi-k2.6": {
+      "request": {
+        "extraBody": {
+          "thinking": { "type": "disabled" }
+        }
+      }
+    },
+    "kimi-k2.7-code": {
+      "request": {
+        "extraBody": {}
+      }
+    }
+  },
+  "capabilities": {
+    "reasoning": true,
+    "code": true,
+    "longContext": true,
+    "streaming": true,
+    "contextCache": true,
+    "vision": true
+  },
+  "limits": {
+    "contextChars": 200000,
+    "timeoutMs": 50000,
+    "outputTokens": {
+      "compact": 1024,
+      "normal": 2048,
+      "detailed": 4096,
+      "minimum": 512,
+      "maximum": 4096
+    }
+  },
+  "routing": {
+    "aliases": ["Kimi", "月之暗面", "Moonshot"],
+    "keywords": ["Kimi", "月之暗面", "Moonshot"],
+    "priority": 40
+  }
+}

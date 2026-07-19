@@ -1,0 +1,36 @@
+{
+  "id": "deepseek",
+  "name": "DeepSeek",
+  "enabled": true,
+  "endpoint": {
+    "protocol": "openai-chat-completions",
+    "baseUrl": "https://api.deepseek.com/chat/completions"
+  },
+  "model": "deepseek-chat",
+  "credentials": {
+    "envKeys": ["DEEPSEEK_API_KEY"]
+  },
+  "capabilities": {
+    "reasoning": false,
+    "code": true,
+    "longContext": true,
+    "streaming": true,
+    "contextCache": true
+  },
+  "limits": {
+    "contextChars": 24000,
+    "timeoutMs": 45000,
+    "outputTokens": {
+      "compact": 512,
+      "normal": 1024,
+      "detailed": 2048,
+      "minimum": 256,
+      "maximum": 4096
+    }
+  },
+  "routing": {
+    "aliases": ["DeepSeek", "深度求索"],
+    "keywords": ["代码", "函数", "组件", "接口", "bug", "优化", "实现", "推理"],
+    "priority": 20
+  }
+}
