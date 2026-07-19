@@ -1,7 +1,0 @@
-.env
-node_modules/
-logs/
-*.md
-!README.md
-.DS_Store
-.idea/
