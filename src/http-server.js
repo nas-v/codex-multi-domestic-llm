@@ -69,7 +69,7 @@ export function createHttpHandler({
           };
         });
 
-        return sendJson(res, 200, { ok: true, server: "smart-ask-router", providers });
+        return sendJson(res, 200, { ok: true, server: "smart-ask-router", apiVersion: "2.0.0", providers });
       }
 
       if (req.method === "GET" && url.pathname === "/providers") {
@@ -107,11 +107,7 @@ export function createHttpHandler({
         } finally {
           req.removeListener("aborted", abortRequest);
         }
-        return sendJson(res, 200, {
-          ...result,
-          output_tokens: result.outputTokens,
-          fallback: result.fallbackType === "local_fallback"
-        });
+        return sendJson(res, 200, result);
       }
 
       return sendJson(res, 404, { error: "not_found" });

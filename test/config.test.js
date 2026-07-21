@@ -10,6 +10,8 @@ import {
   resolveProviderOutputTokens
   , validateProvidersDocument
 } from "../src/config.js";
+import { PROVIDER_MAX_ATTEMPTS } from "../src/provider-client.js";
+import { DEFAULT_TOTAL_TIMEOUT_MS } from "../src/router.js";
 
 test("provider aliases resolve deterministically", () => {
   assert.equal(resolveProviderAlias("智谱"), "zhipu");
@@ -28,12 +30,22 @@ test("explicit provider remains strict and auto retains fallbacks", () => {
 });
 
 test("output policy adapts to each provider and clamps explicit values", () => {
-  assert.equal(resolveProviderOutputTokens("zhipu", "compact"), 768);
+  assert.equal(resolveProviderOutputTokens("zhipu", "compact"), 1024);
   assert.equal(resolveProviderOutputTokens("zhipu", "detailed"), 4096);
   assert.equal(resolveProviderOutputTokens("zhipu", "compact", 64), 768);
   assert.equal(resolveProviderOutputTokens("deepseek", "compact"), 512);
   assert.equal(resolveProviderOutputTokens("deepseek", "detailed"), 2048);
   assert.equal(resolveProviderOutputTokens("deepseek", "compact", 9999), 4096);
+});
+
+test("zhipu baseline tuning preserves timeout safety margins", () => {
+  const zhipu = getProviderConfig("zhipu");
+  assert.equal(zhipu.outputPolicy.compact, 1024);
+  assert.equal(zhipu.outputPolicy.normal, 2048);
+  assert.equal(zhipu.timeout, 45000);
+  assert.equal(DEFAULT_TOTAL_TIMEOUT_MS, 55000);
+  assert.ok(zhipu.timeout < DEFAULT_TOTAL_TIMEOUT_MS);
+  assert.equal(PROVIDER_MAX_ATTEMPTS, 3);
 });
 
 test("provider capabilities are exposed from configuration", () => {

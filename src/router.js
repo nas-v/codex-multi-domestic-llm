@@ -5,6 +5,8 @@ import { log, LogLevel } from "./logger.js";
 import { buildLocalFallbackResponse, callProvider } from "./provider-client.js";
 import { buildSectionExecutionIdentity, sectionExecutionStore } from "./section-execution.js";
 
+export const DEFAULT_TOTAL_TIMEOUT_MS = 55000;
+
 function emptyUsage() {
   return {
     promptTokens: 0,
@@ -24,7 +26,7 @@ export async function routeModel({
   maxOutputTokens,
   temperature = 0.7,
   signal,
-  totalTimeoutMs = 55000,
+  totalTimeoutMs = DEFAULT_TOTAL_TIMEOUT_MS,
   reportId,
   sectionId,
   stage,
@@ -194,6 +196,7 @@ export async function routeModel({
           ...(identity ? { idempotencyKey: identity.key } : {}),
           provider: candidate,
           model: config.model,
+          durationMs: Date.now() - startedAt,
           status: error?.status,
           errorCode: classified.code,
           retryable: classified.retryable,

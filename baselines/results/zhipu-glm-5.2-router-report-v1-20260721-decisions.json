@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "source": "zhipu-glm-5.2-router-report-v1-20260721.json",
+  "provider": "zhipu",
+  "model": "glm-5.2",
+  "observations": {
+    "calls": 4,
+    "successfulCalls": 4,
+    "retriedCalls": 0,
+    "totalDurationMs": 102900,
+    "averageCallDurationMs": 25725,
+    "maxCallDurationMs": 31967,
+    "totalTokens": 9202,
+    "reasoningTokens": 621,
+    "cacheObserved": true,
+    "cacheHitRate": 0,
+    "promptTokenRange": [954, 959],
+    "budgetSaturatedCalls": 4
+  },
+  "decisions": [
+    {
+      "field": "limits.outputTokens.compact",
+      "before": 768,
+      "after": 1024,
+      "reason": "规划调用的 completionTokens 达到 768 上限，其中 reasoningTokens 为 383；提高 compact 预算以减少推理占满预算后正文不足的风险。"
+    },
+    {
+      "field": "limits.outputTokens.normal",
+      "before": 2048,
+      "after": 2048,
+      "reason": "基线显式使用 1536 且三个章节全部达到上限；Provider 当前 normal 默认已经是 2048，因此保留现值。"
+    },
+    {
+      "field": "limits.timeoutMs",
+      "before": 45000,
+      "after": 45000,
+      "reason": "最慢调用约 32 秒且无超时，仍有约 13 秒 Provider 级余量；单轮成功样本不足以支持扩大超时。"
+    },
+    {
+      "field": "route.totalTimeoutMs",
+      "before": 55000,
+      "after": 55000,
+      "reason": "最慢调用距离总 deadline 仍有约 23 秒且未发生重试；保留现值可继续约束后台工作。"
+    },
+    {
+      "field": "provider.maxAttempts",
+      "before": 3,
+      "after": 3,
+      "reason": "本次没有重试样本，不据此改变现有受总 deadline 约束的重试上限。"
+    }
+  ],
+  "followUps": [
+    "缓存字段可观测但命中率为 0；输入只有约 956 tokens，不能据此判断长前缀缓存无效。",
+    "保留 v1 固定样本和预算用于同口径比较；若要验证缓存阈值或新预算，应另建样本版本，不覆盖本次样本。",
+    "如果后续出现接近 45 秒的正常成功样本，再评估 Provider 超时和 MCP 安全余量。"
+  ]
+}

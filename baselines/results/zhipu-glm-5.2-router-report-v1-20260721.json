@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "sampleId": "router-report",
+  "sampleVersion": "1.0.0",
+  "sampleHash": "437884ce6ff916d4",
+  "reportId": "baseline:zhipu:20260721",
+  "executionMode": "live",
+  "requestedProvider": "zhipu",
+  "plannedCalls": 4,
+  "status": "success",
+  "startedAt": "2026-07-21T15:50:04.467Z",
+  "completedAt": "2026-07-21T15:51:47.367Z",
+  "durationMs": 102900,
+  "completedCalls": 4,
+  "succeededCalls": 4,
+  "failedCalls": 0,
+  "performance": {
+    "callDurationMs": 102900,
+    "averageCallDurationMs": 25725,
+    "maxCallDurationMs": 31967,
+    "budgetSaturatedCalls": 4
+  },
+  "usage": {
+    "promptTokens": 3826,
+    "cachedPromptTokens": 0,
+    "cacheObserved": true,
+    "completionTokens": 5376,
+    "reasoningTokens": 621,
+    "totalTokens": 9202,
+    "cacheHitRate": 0
+  },
+  "calls": [
+    {
+      "callId": "plan",
+      "stage": "plan",
+      "requestId": "68d38fb6-a56f-4d48-aa9d-48e7e1214f1e",
+      "status": "success",
+      "durationMs": 16835,
+      "selectedProvider": "zhipu",
+      "model": "glm-5.2",
+      "mode": "compact",
+      "outputTokens": 768,
+      "outputBudgetSaturated": true,
+      "usage": {
+        "promptTokens": 956,
+        "cachedPromptTokens": 0,
+        "cacheObserved": true,
+        "completionTokens": 768,
+        "reasoningTokens": 383,
+        "totalTokens": 1724,
+        "cacheHitRate": 0
+      },
+      "attempts": [
+        {
+          "provider": "zhipu",
+          "model": "glm-5.2",
+          "status": "success",
+          "durationMs": 16830
+        }
+      ],
+      "fallbackType": "none"
+    },
+    {
+      "callId": "section:routing-safety",
+      "stage": "section",
+      "sectionId": "routing-safety",
+      "requestId": "640a9852-3c12-493e-8de2-250acbf73819",
+      "status": "success",
+      "durationMs": 31967,
+      "selectedProvider": "zhipu",
+      "model": "glm-5.2",
+      "mode": "normal",
+      "outputTokens": 1536,
+      "outputBudgetSaturated": true,
+      "usage": {
+        "promptTokens": 959,
+        "cachedPromptTokens": 0,
+        "cacheObserved": true,
+        "completionTokens": 1536,
+        "reasoningTokens": 119,
+        "totalTokens": 2495,
+        "cacheHitRate": 0
+      },
+      "attempts": [
+        {
+          "provider": "zhipu",
+          "model": "glm-5.2",
+          "status": "success",
+          "durationMs": 31967,
+          "idempotencyStatus": "executed"
+        }
+      ],
+      "fallbackType": "none",
+      "idempotencyStatus": "executed"
+    },
+    {
+      "callId": "section:report-recovery",
+      "stage": "section",
+      "sectionId": "report-recovery",
+      "requestId": "edf008af-7b60-443e-b873-bb8231a64346",
+      "status": "success",
+      "durationMs": 24809,
+      "selectedProvider": "zhipu",
+      "model": "glm-5.2",
+      "mode": "normal",
+      "outputTokens": 1536,
+      "outputBudgetSaturated": true,
+      "usage": {
+        "promptTokens": 957,
+        "cachedPromptTokens": 0,
+        "cacheObserved": true,
+        "completionTokens": 1536,
+        "reasoningTokens": 73,
+        "totalTokens": 2493,
+        "cacheHitRate": 0
+      },
+      "attempts": [
+        {
+          "provider": "zhipu",
+          "model": "glm-5.2",
+          "status": "success",
+          "durationMs": 24809,
+          "idempotencyStatus": "executed"
+        }
+      ],
+      "fallbackType": "none",
+      "idempotencyStatus": "executed"
+    },
+    {
+      "callId": "section:operations-cost",
+      "stage": "section",
+      "sectionId": "operations-cost",
+      "requestId": "6c0ca979-5513-474f-9449-43d9b6fe715d",
+      "status": "success",
+      "durationMs": 29289,
+      "selectedProvider": "zhipu",
+      "model": "glm-5.2",
+      "mode": "normal",
+      "outputTokens": 1536,
+      "outputBudgetSaturated": true,
+      "usage": {
+        "promptTokens": 954,
+        "cachedPromptTokens": 0,
+        "cacheObserved": true,
+        "completionTokens": 1536,
+        "reasoningTokens": 46,
+        "totalTokens": 2490,
+        "cacheHitRate": 0
+      },
+      "attempts": [
+        {
+          "provider": "zhipu",
+          "model": "glm-5.2",
+          "status": "success",
+          "durationMs": 29289,
+          "idempotencyStatus": "executed"
+        }
+      ],
+      "fallbackType": "none",
+      "idempotencyStatus": "executed"
+    }
+  ],
+  "safety": {
+    "storesPrompt": false,
+    "storesResponseText": false,
+    "storesCredentials": false
+  }
+}

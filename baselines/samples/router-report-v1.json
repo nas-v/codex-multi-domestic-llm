@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "sampleId": "router-report",
+  "sampleVersion": "1.0.0",
+  "title": "本地多模型路由器技术评估基线",
+  "sharedContext": "系统是一套运行在开发者本机的 MCP 与 HTTP 外部模型路由器。它只在用户明确调用 smart_ask 时访问外部模型，普通 Codex 对话不会自动转发。系统支持智谱、千帆、Kimi 和 DeepSeek 等兼容 OpenAI Chat Completions 的服务，Provider 通过独立 JSON 文件声明端点、模型、鉴权环境变量、能力、请求差异、上下文限制、输出策略、超时、别名、关键词和优先级。启动时 Registry 会发现并验证所有 Provider，生成不可变运行快照；配置改变后需要重启，避免请求执行期间发生半更新。明确指定 Provider 时调用必须保持严格，不允许静默切换到其他外部模型；选择 auto 时可以按优先级和关键词依次尝试，全部失败后返回本地兜底文本。\n\n共享路由入口负责校验 prompt、mode、temperature、maxOutputTokens、reportId、sectionId 和 stage。每次请求具有 requestId，失败 attempt 记录稳定错误码、HTTP 风格状态、是否可重试和耗时。外部调用具有小于 MCP tool timeout 的总 deadline，并将取消信号传递给 fetch 和重试等待；每次 fetch 的定时器必须在 finally 中清理。只有超时、网络错误、限流和可重试的上游 5xx 可以在单个 Provider 内重试，重试次数和退避受总 deadline 约束。HTTP 入口限制 Content-Type、请求体大小、读取时间和上游响应体大小，并处理端口占用与权限错误。日志采用 JSONL，具有轮转、长度限制、敏感字段递归脱敏和写入失败时的一次性 stderr 降级提示。\n\n长报告采用规划、分节、Codex 本地汇总的方式。规划和章节共享 reportId，章节还具有稳定 sectionId。路由器根据 reportId、sectionId、Provider 和模型计算幂等身份，并使用 prompt、mode、temperature 与输出预算生成请求指纹。同一进程内的相同并发章节只执行一次；成功结果可以短期内存复用，失败或没有等待者的中断执行不会缓存。相同幂等身份如果请求指纹变化，应返回 IDEMPOTENCY_CONFLICT，要求调用者更换 sectionId。日志聚合工具按报告和章节给出成功、失败、未完成、重试次数与标准化 usage；被后续成功取代的失败执行，以及 joined 或 reused 请求，不能重复计入 token。项目不持久化模型正文，也不实现跨任务语义缓存。\n\n当前 usage 统一为 promptTokens、cachedPromptTokens、cacheObserved、completionTokens、reasoningTokens、totalTokens 和 cacheHitRate。厂商没有提供缓存字段时 cacheHitRate 必须为 null，不能解释为零命中。基线测试的目的不是评价回答内容，而是以固定共享前缀和稳定章节顺序测量真实 Provider 的成功率、延迟、输出与推理消耗、重试情况以及缓存是否可观测。基线产物不得包含 prompt、模型正文、API Key、鉴权头、Cookie、secret、password 或未经脱敏的上游错误。默认执行必须是 dry-run；只有显式 live、明确 Provider 和输出路径同时存在时才允许产生真实调用。测试套件使用 Mock，不应访问真实 Provider。\n\n评估时需要优先保护这些不变量：显式选择不被改写；请求取消后没有后台重试；总 deadline 不被单次超时突破；配置错误在启动期暴露；错误响应保持机器可读；日志失败不影响模型调用；幂等复用不重复计算 usage；缓存不可观测时不伪造命中率；基线摘要不保存正文与凭据；任何基于真实数据的预算或超时调整都必须保留 MCP 超时安全余量。建议必须区分已经验证的事实、从指标得到的推断和仍需补测的假设，并说明调整的收益、风险与回滚条件。",
+  "plan": {
+    "mode": "compact",
+    "maxOutputTokens": 768,
+    "instruction": "仅输出三部分：评估目标、章节顺序、每章要验证的两个关键问题。不要复述背景。"
+  },
+  "sections": [
+    {
+      "id": "routing-safety",
+      "mode": "normal",
+      "maxOutputTokens": 1536,
+      "instruction": "评估显式选路、自动回退、错误分类、取消传播和总 deadline 的正确性。给出主要风险、证据和可执行改进建议。"
+    },
+    {
+      "id": "report-recovery",
+      "mode": "normal",
+      "maxOutputTokens": 1536,
+      "instruction": "评估长报告幂等、失败恢复、重复 usage 排除和进程重启后的限制。给出主要风险、证据和可执行改进建议。"
+    },
+    {
+      "id": "operations-cost",
+      "mode": "normal",
+      "maxOutputTokens": 1536,
+      "instruction": "评估日志安全、运行边界、缓存观测、token 成本和基线方法。给出主要风险、证据和可执行改进建议。"
+    }
+  ]
+}

@@ -29,10 +29,11 @@ test("HTTP health route runs without binding a port", async () => {
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.ok, true);
   assert.equal(response.body.server, "smart-ask-router");
+  assert.equal(response.body.apiVersion, "2.0.0");
   assert.ok(response.body.providers.some((provider) => provider.name === "zhipu"));
 });
 
-test("HTTP ask exposes unified metadata and compatibility fields", async () => {
+test("HTTP 2.0 ask exposes only the canonical metadata fields", async () => {
   const route = async ({ requestId, provider, mode, reportId, sectionId, stage }) => ({
     requestId,
     reportId,
@@ -61,8 +62,9 @@ test("HTTP ask exposes unified metadata and compatibility fields", async () => {
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.requestId, "req-http");
   assert.equal(response.body.selectedProvider, "zhipu");
-  assert.equal(response.body.output_tokens, 768);
-  assert.equal(response.body.fallback, false);
+  assert.equal(response.body.outputTokens, 768);
+  assert.equal(Object.hasOwn(response.body, "output_tokens"), false);
+  assert.equal(Object.hasOwn(response.body, "fallback"), false);
   assert.equal(response.body.reportId, "report-http");
   assert.equal(response.body.sectionId, "intro");
 });

@@ -94,4 +94,4 @@ server.setRequestHandler(CallToolRequestSchema, async (req, context) => {
 // 启动服务
 const transport = new StdioServerTransport();
 await server.connect(transport);
-log(LogLevel.INFO, "MCP 服务已启动，等待连接...");
+log(LogLevel.INFO, "MCP stdio 服务已启动；该前台进程会保持运行，供 Codex/MCP 客户端连接。日常使用已注册的 smart_ask 时通常不需要手动运行 npm start。");

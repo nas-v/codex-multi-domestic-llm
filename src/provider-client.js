@@ -169,6 +169,7 @@ export async function callProvider(selected, prompt, mode, maxOutputTokens, temp
     ...(callOptions.stage ? { stage: callOptions.stage } : {}),
     ...(callOptions.idempotencyKey ? { idempotencyKey: callOptions.idempotencyKey } : {})
   };
+  const startedAt = Date.now();
   log(LogLevel.INFO, "调用模型", { requestId, ...trace, provider: selected, model: config.model, promptLen: prompt.length });
   const data = await fetchWithRetry(config.baseUrl, {
     method: "POST",
@@ -215,7 +216,10 @@ export async function callProvider(selected, prompt, mode, maxOutputTokens, temp
     throw error;
   }
   const usage = normalizeUsage(data.usage);
-  log(LogLevel.INFO, "调用成功", { requestId, ...trace, provider: selected, resultLen: result.length, mode, outputTokens, usage });
+  log(LogLevel.INFO, "调用成功", {
+    requestId, ...trace, provider: selected, model: config.model,
+    resultLen: result.length, mode, outputTokens, durationMs: Date.now() - startedAt, usage
+  });
   return { result, model: config.model, outputTokens, usage };
 }
 

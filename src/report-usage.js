@@ -23,8 +23,11 @@ export function parseLogLines(text) {
 export function aggregateReportUsage(entries, reportId) {
   const relevant = entries.filter((entry) => entry?.reportId === reportId);
   const executions = new Map();
+  const requestStartedAt = new Map();
   for (const entry of relevant) {
     if (!entry.requestId) continue;
+    const timestampMs = Date.parse(entry.timestamp || "");
+    if (entry.message === "调用模型" && Number.isFinite(timestampMs)) requestStartedAt.set(entry.requestId, timestampMs);
     const executionKey = entry.sectionId
       ? `section:${entry.sectionId}`
       : entry.stage === "plan"
@@ -42,7 +45,8 @@ export function aggregateReportUsage(entries, reportId) {
       status: "incomplete",
       errorCode: null,
       usage: null,
-      attempts: 0
+      attempts: 0,
+      durationMs: null
     };
     if (!current.requestIds.includes(entry.requestId)) current.requestIds.push(entry.requestId);
     current.requestId = entry.requestId;
@@ -56,18 +60,24 @@ export function aggregateReportUsage(entries, reportId) {
       current.status = "success";
       current.usage = entry.usage || null;
       current.errorCode = null;
+      const startedAt = requestStartedAt.get(entry.requestId);
+      current.durationMs = Number(entry.durationMs) || (Number.isFinite(timestampMs) && Number.isFinite(startedAt) ? timestampMs - startedAt : null);
     } else if (entry.message === "章节调用复用") {
       current.status = "success";
     } else if (entry.message === "使用本地兜底响应") {
       if (current.status !== "success") {
         current.status = "failed";
         current.errorCode = "LOCAL_FALLBACK";
+        const startedAt = requestStartedAt.get(entry.requestId);
+        current.durationMs = Number(entry.durationMs) || (Number.isFinite(timestampMs) && Number.isFinite(startedAt) ? timestampMs - startedAt : current.durationMs);
       }
     } else if (entry.message === "provider 调用失败，尝试下一个") {
       current.attempts += current.attempts === 0 ? 1 : 0;
       if (current.status !== "success") {
         current.status = "failed";
         current.errorCode = entry.errorCode || "UPSTREAM_ERROR";
+        const startedAt = requestStartedAt.get(entry.requestId);
+        current.durationMs = Number(entry.durationMs) || (Number.isFinite(timestampMs) && Number.isFinite(startedAt) ? timestampMs - startedAt : current.durationMs);
       }
     }
     executions.set(executionKey, current);
@@ -92,6 +102,7 @@ export function aggregateReportUsage(entries, reportId) {
     ? usage.cachedPromptTokens / cacheEligiblePromptTokens
     : null;
 
+  const durations = calls.map((call) => call.durationMs).filter(Number.isFinite);
   return {
     reportId,
     status: calls.length === 0 ? "not_found"
@@ -101,6 +112,11 @@ export function aggregateReportUsage(entries, reportId) {
     succeeded: calls.filter((call) => call.status === "success").length,
     failed: calls.filter((call) => call.status === "failed").length,
     incomplete: calls.filter((call) => call.status === "incomplete").length,
+    performance: {
+      callDurationMs: durations.reduce((sum, value) => sum + value, 0),
+      averageCallDurationMs: durations.length ? Math.round(durations.reduce((sum, value) => sum + value, 0) / durations.length) : 0,
+      maxCallDurationMs: durations.length ? Math.max(...durations) : 0
+    },
     usage,
     sections: calls
   };

@@ -59,7 +59,7 @@ const transport = new StdioClientTransport({
   stderr: "pipe"
 });
 
-const client = new Client({ name: "smart-ask-demo", version: "1.0.0" });
+const client = new Client({ name: "smart-ask-demo", version: "2.0.0" });
 
 await client.connect(transport);
 

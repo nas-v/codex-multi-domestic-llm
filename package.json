@@ -1,7 +1,7 @@
 
 {
   "name": "codex-multi-domestic-llm",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "main": "src/server.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "ask": "node scripts/demo.mjs",
     "health": "node scripts/demo.mjs --health",
     "report:usage": "node scripts/report-usage.mjs",
+    "report:baseline": "node scripts/report-baseline.mjs",
     "provider:validate": "node scripts/provider-validate.mjs",
     "provider:docs": "node scripts/provider-docs.mjs",
     "provider:check": "node scripts/provider-check.mjs",

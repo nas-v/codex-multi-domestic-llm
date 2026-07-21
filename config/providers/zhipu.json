@@ -21,7 +21,7 @@
     "contextChars": 24000,
     "timeoutMs": 45000,
     "outputTokens": {
-      "compact": 768,
+      "compact": 1024,
       "normal": 2048,
       "detailed": 4096,
       "minimum": 768,

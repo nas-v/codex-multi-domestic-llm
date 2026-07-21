@@ -2,6 +2,8 @@
 
 一个安全、可扩展的本地 MCP 路由器。Codex 始终使用自身主模型；仅当你显式调用 `@smart_ask` 时，路由器才会请求 `config/providers/*.json` 中配置的外部模型。
 
+当前 HTTP API 主版本为 2.0。
+
 ## 配置模型
 
 每个 Provider 独立保存在 `config/providers/<id>.json`，并由统一 Registry 自动发现。新增兼容模型只需新增一个配置文件：
@@ -101,6 +103,21 @@ npm run report:usage -- <reportId>
 
 输出包含 `success`、`partial_success`、`failed` 或 `not_found` 状态，各章节错误码以及汇总 usage。只有明确返回缓存统计的调用参与缓存命中率分母；不可观测调用仍计入总 prompt token，但不会把命中率错误稀释为 0%。
 
+固定长报告基线默认只做 dry-run，不会访问外部模型：
+
+```bash
+npm run report:baseline -- --dry-run
+```
+
+真实基线必须同时显式声明 live、Provider 和脱敏摘要输出路径：
+
+```bash
+npm run report:baseline -- --live --provider zhipu \
+  --output baselines/results/zhipu-baseline.json
+```
+
+摘要只保存样本版本/哈希、Provider、模型、阶段、延迟、重试、输出预算饱和状态和 usage，不保存 prompt、模型正文或凭据。2026-07-21 的智谱基线 4/4 成功，平均调用约 25.7 秒、最慢约 32.0 秒；4 次均达到输出预算，因此将智谱 compact 默认值从 768 调整为 1024，normal/timeout/总 deadline 暂时保持 2048/45 秒/55 秒。
+
 HTTP 服务启动后可用以下命令验证智谱，并在返回 JSON 中确认实际 provider：
 
 HTTP POST 接口只接受 `application/json`，请求体默认上限 1MB、读取超时 10 秒；上游响应默认上限 4MB。单次路由总 deadline 为 55 秒，并会把 HTTP/MCP 客户端取消信号传递给上游请求和重试等待。
@@ -126,14 +143,14 @@ LLM_MCP_LOG_BACKUPS=5
 
 日志目录或文件不可写时，服务会降级到 stderr，并且只输出一次降级警告，不中断模型调用。
 
-MCP 的 `smart_ask` 保持 `content` 为纯文本，并通过 `structuredContent` 返回调用元数据。`fallbackType` 有三种值：`none`、`provider_failover`、`local_fallback`。HTTP 接口返回相同的 `requestId`、`attempts` 和回退语义，同时暂时保留旧版 `fallback` 与 `output_tokens` 字段。
+MCP 的 `smart_ask` 保持 `content` 为纯文本，并通过 `structuredContent` 返回调用元数据。`fallbackType` 有三种值：`none`、`provider_failover`、`local_fallback`。HTTP 2.0 接口返回相同的 `requestId`、`attempts` 和回退语义，只使用规范字段 `fallbackType` 与 `outputTokens`。
 
-### HTTP 兼容字段废弃计划
+### HTTP 2.0 迁移
 
-- `fallback` 已由 `fallbackType` 取代；`output_tokens` 已由 `outputTokens` 取代。
-- 1.x：继续返回旧字段，文档与新代码只使用新字段。
-- 发布 2.0 前：在变更日志中再次提示，并提供至少一个小版本的迁移窗口。
-- 2.0：移除 `fallback` 与 `output_tokens`。MCP `structuredContent` 不受影响。
+- 旧 `fallback` 已移除，请读取 `fallbackType`；本地兜底判断改为 `fallbackType === "local_fallback"`。
+- 旧 `output_tokens` 已移除，请读取 `outputTokens`。
+- `/health` 返回 `apiVersion: "2.0.0"`，调用方可据此确认响应契约。
+- MCP `structuredContent` 的字段不受这次 HTTP 清理影响。
 
 HTTP 启动时会捕获 `EADDRINUSE`、`EACCES` 和 `EPERM`，输出 `PORT_IN_USE` 或 `PORT_PERMISSION_DENIED` 并使用退出码 1 结束，不再抛出未处理异常堆栈。
 

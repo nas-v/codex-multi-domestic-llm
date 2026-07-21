@@ -20,8 +20,8 @@ test("parses JSONL while counting malformed lines", () => {
 
 test("aggregates report sections and observable cache usage", () => {
   const entries = [
-    { reportId: "report-1", requestId: "plan", stage: "plan", message: "调用模型", provider: "zhipu" },
-    { reportId: "report-1", requestId: "plan", stage: "plan", message: "调用成功", provider: "zhipu", usage: observedUsage },
+    { timestamp: "2026-01-01T00:00:00.000Z", reportId: "report-1", requestId: "plan", stage: "plan", message: "调用模型", provider: "zhipu" },
+    { timestamp: "2026-01-01T00:00:01.000Z", reportId: "report-1", requestId: "plan", stage: "plan", message: "调用成功", provider: "zhipu", usage: observedUsage },
     { reportId: "report-1", requestId: "section-1", stage: "section", sectionId: "intro", message: "调用模型", provider: "zhipu" },
     { reportId: "report-1", requestId: "section-1", stage: "section", sectionId: "intro", message: "调用成功", provider: "zhipu", usage: {
       promptTokens: 500, cachedPromptTokens: null, cacheObserved: false,
@@ -38,6 +38,7 @@ test("aggregates report sections and observable cache usage", () => {
   assert.equal(report.usage.promptTokens, 1500);
   assert.equal(report.usage.cachedPromptTokens, 800);
   assert.equal(report.usage.cacheHitRate, 0.8);
+  assert.equal(report.performance.callDurationMs, 1000);
   assert.equal(report.sections.find((section) => section.sectionId === "risk").errorCode, "TIMEOUT");
 });
 
